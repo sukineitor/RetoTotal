@@ -159,7 +159,11 @@ export default function ChallengePage() {
   const [selectedChallenge, setSelectedChallenge] = useState("")
   const [wheelRotation, setWheelRotation] = useState(0)
   const [challengeAccepted, setChallengeAccepted] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   const wheelRef = useRef(null)
+
+  // Toggle mobile menu
+  const toggleMenu = () => setMenuOpen(!menuOpen)
 
   // Get challenges based on selected category
   const getChallenges = () => {
@@ -211,12 +215,68 @@ export default function ChallengePage() {
     }
   }
 
+  // Mobile menu component
+  const MobileMenu = () => (
+    <div
+      className={`fixed inset-y-0 left-0 w-64 bg-background/80 backdrop-blur-sm border-r border-border text-foreground transform ${menuOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 ease-in-out z-40`}
+    >
+      <div className="p-4 pt-12">
+        <h2 className="text-xl font-bold mb-4 border-b pb-2 border-border">Categorías</h2>
+        <button
+          className="block w-full text-left py-2 px-4 hover:bg-accent hover:text-accent-foreground rounded-md mb-2 transition-colors"
+          onClick={() => {
+            setSelectedCategory("random")
+            toggleMenu()
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <Shuffle className="h-4 w-4" />
+            <span>Aleatorio</span>
+          </div>
+        </button>
+        {categories.map((category) => (
+          <button
+            key={category.id}
+            className="block w-full text-left py-2 px-4 hover:bg-accent hover:text-accent-foreground rounded-md mb-2 transition-colors"
+            onClick={() => {
+              setSelectedCategory(category.id)
+              toggleMenu()
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <category.icon className="h-4 w-4" />
+              <span>{category.name}</span>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <h1 className="text-4xl font-bold text-center mb-8">🎯 RetoTotal </h1>
+      {/* Mobile menu button */}
+      <button
+        onClick={toggleMenu}
+        className="md:hidden fixed top-4 left-4 z-50 p-2 bg-background/50 backdrop-blur-sm text-foreground rounded-lg border border-border/50"
+        aria-label="Menu"
+      >
+        {menuOpen ? "✖" : "☰"}
+      </button>
 
-      <Tabs defaultValue="random" value={selectedCategory} onValueChange={setSelectedCategory} className="mb-8">
-        <TabsList className="grid grid-cols-3 md:grid-cols-7 gap-2">
+      {/* Mobile menu */}
+      <MobileMenu />
+
+      <h1 className="text-4xl font-bold text-center mb-8">🎯 RetoTotal</h1>
+
+      {/* Desktop tabs */}
+      <Tabs
+        defaultValue="random"
+        value={selectedCategory}
+        onValueChange={setSelectedCategory}
+        className="mb-8 hidden md:block"
+      >
+        <TabsList className="grid grid-cols-7 gap-2">
           <TabsTrigger value="random" className="flex items-center gap-2">
             <Shuffle className="h-4 w-4" />
             <span className="hidden md:inline">Aleatorio</span>
@@ -229,6 +289,16 @@ export default function ChallengePage() {
           ))}
         </TabsList>
       </Tabs>
+
+      {/* Mobile category indicator */}
+      <div className="md:hidden mb-4 text-center">
+        <span className="font-medium">Categoría: </span>
+        <span>
+          {selectedCategory === "random"
+            ? "Aleatoria"
+            : categories.find((cat) => cat.id === selectedCategory)?.name || ""}
+        </span>
+      </div>
 
       <div className="flex flex-col md:flex-row gap-8 items-center">
         <div className="relative w-64 h-64 md:w-80 md:h-80">
