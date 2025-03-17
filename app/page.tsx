@@ -5,161 +5,57 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dumbbell, BookOpen, Paintbrush, Brain, PartyPopper, Shuffle, Flame } from "lucide-react"
+import { useLanguage, getTranslatedChallenges } from "@/contexts/language-context"
 
-// Challenge categories and their respective challenges
-const categories = [
+// Challenge categories structure
+const categoryStructure = [
   {
     id: "fitness",
-    name: "Fitness",
+    name: "category.fitness",
     icon: Dumbbell,
     color: "bg-red-500",
-    challenges: [
-      "Hacer 30 sentadillas.",
-      "Salir a correr por 15 minutos.",
-      "No consumir azúcar por 24 horas.",
-      "Hacer 20 flexiones.",
-      "Estirar durante 10 minutos.",
-      "Beber 2 litros de agua hoy.",
-      "Caminar 5000 pasos.",
-      "Hacer 3 series de 10 abdominales.",
-      "Mantener una posición de plancha durante 1 minuto.",
-      "Subir y bajar escaleras durante 5 minutos.",
-      "Hacer 15 burpees.",
-      "Saltar la cuerda durante 3 minutos.",
-      "Hacer 20 sentadillas con salto.",
-      "Realizar una caminata de 30 minutos.",
-      "Hacer yoga durante 15 minutos.",
-    ],
   },
   {
     id: "reading",
-    name: "Lectura",
+    name: "category.reading",
     icon: BookOpen,
     color: "bg-blue-500",
-    challenges: [
-      "Leer 10 páginas de un libro.",
-      "Buscar una palabra nueva en el diccionario y usarla.",
-      "Leer un artículo sobre un tema desconocido.",
-      "Leer un poema en voz alta.",
-      "Resumir el último libro que leíste.",
-      "Recomendar un libro a un amigo.",
-      "Leer un capítulo de un género literario que nunca lees.",
-      "Escribir una reseña de un libro que hayas leído.",
-      "Leer noticias de un país diferente al tuyo.",
-      "Memorizar un poema corto.",
-      "Leer en voz alta durante 10 minutos.",
-      "Investigar sobre un autor que no conoces.",
-      "Leer un cuento corto completo.",
-      "Crear una lista de libros que quieres leer este año.",
-      "Intercambiar recomendaciones de libros con un amigo.",
-    ],
   },
   {
     id: "creativity",
-    name: "Creatividad",
+    name: "category.creativity",
     icon: Paintbrush,
     color: "bg-purple-500",
-    challenges: [
-      "Dibuja algo en 5 minutos sin borrar.",
-      "Escribe una historia corta de 100 palabras.",
-      "Toma una foto artística con tu celular.",
-      "Crear un collage con materiales reciclados.",
-      "Escribir una carta a tu yo del futuro.",
-      "Inventar una receta nueva.",
-      "Diseñar un logo para un negocio imaginario.",
-      "Escribir un haiku (poema japonés de tres versos).",
-      "Crear una melodía con objetos cotidianos.",
-      "Dibujar un autorretrato sin mirar el papel.",
-      "Escribir una canción de 4 líneas.",
-      "Crear un mapa de un lugar imaginario.",
-      "Diseñar un tatuaje que te gustaría tener.",
-      "Hacer un video de 15 segundos sobre tu día.",
-      "Crear un personaje ficticio con historia completa.",
-    ],
   },
   {
     id: "mental",
-    name: "Bienestar Mental",
+    name: "category.mental",
     icon: Brain,
     color: "bg-green-500",
-    challenges: [
-      "Meditar por 5 minutos.",
-      "Escribir tres cosas por las que estás agradecido.",
-      "Pasar 1 hora sin redes sociales.",
-      "Practicar respiración profunda por 3 minutos.",
-      "Hacer una actividad que te relaje.",
-      "Organizar un espacio de tu casa.",
-      "Escribir tus pensamientos durante 10 minutos sin parar.",
-      "Llamar a un ser querido solo para saludar.",
-      "Hacer una caminata consciente, prestando atención a cada paso.",
-      "Desconectar todos los dispositivos electrónicos por 2 horas.",
-      "Practicar afirmaciones positivas frente al espejo.",
-      "Hacer algo amable por un extraño.",
-      "Visualizar tus metas durante 5 minutos.",
-      "Crear una lista de cosas que te hacen feliz.",
-      "Perdonar a alguien que te haya lastimado.",
-    ],
   },
   {
     id: "fun",
-    name: "Diversión",
+    name: "category.fun",
     icon: PartyPopper,
     color: "bg-yellow-500",
-    challenges: [
-      "Hablar con un desconocido.",
-      "Enviar un mensaje divertido a un amigo.",
-      "Aprender un chiste nuevo y contarlo.",
-      "Bailar tu canción favorita.",
-      "Hacer una videollamada sorpresa a alguien.",
-      "Probar una comida que nunca has probado.",
-      "Cantar en la ducha a todo volumen.",
-      "Hacer un karaoke improvisado.",
-      "Jugar un juego de mesa con amigos o familia.",
-      "Ver un video de comedia y reírte a carcajadas.",
-      "Hacer una guerra de almohadas.",
-      "Contar una historia exagerada (pero inofensiva).",
-      "Imitar a un personaje famoso durante 5 minutos.",
-      "Inventar un juego con objetos que tengas en casa.",
-      "Hacer una búsqueda del tesoro para amigos o familia.",
-    ],
   },
   {
     id: "daring",
-    name: "Atrevido",
+    name: "category.daring",
     icon: Flame,
     color: "bg-orange-500",
-    challenges: [
-      "Confiesa quién te gusta del grupo.",
-      "Toma un shot o un trago (solo para mayores de edad).",
-      "Cuenta una historia vergonzosa de tu vida.",
-      "Muestra la última foto que tomaste con tu celular.",
-      "Llama a la quinta persona de tus contactos y habla por 30 segundos.",
-      "Deja que el grupo vea tus últimos mensajes.",
-      "Imita a alguien del grupo hasta que adivinen quién es.",
-      "Baila sin música por 30 segundos.",
-      "Confiesa algo que nunca le has dicho a nadie.",
-      "Deja que alguien publique algo en tus redes sociales.",
-      "Envía un mensaje de texto a tu crush o ex.",
-      "Haz 10 sentadillas mientras cantas tu canción favorita.",
-      "Deja que alguien del grupo te ponga un peinado ridículo.",
-      "Cuenta cuál ha sido tu mayor mentira.",
-      "Haz una llamada telefónica con acento extranjero.",
-      "Revela tu mayor miedo.",
-      "Cuenta tu fantasía más extraña.",
-      "Deja que alguien revise tu historial de búsqueda.",
-      "Actúa como un animal durante 1 minuto.",
-      "Cuenta tu sueño más extraño.",
-    ],
   },
 ]
 
 export default function ChallengePage() {
+  const { language, t } = useLanguage()
   const [selectedCategory, setSelectedCategory] = useState("random")
   const [spinning, setSpinning] = useState(false)
   const [selectedChallenge, setSelectedChallenge] = useState("")
   const [wheelRotation, setWheelRotation] = useState(0)
   const [challengeAccepted, setChallengeAccepted] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [spinCount, setSpinCount] = useState(0)
   const wheelRef = useRef(null)
 
   // Toggle mobile menu
@@ -169,11 +65,10 @@ export default function ChallengePage() {
   const getChallenges = () => {
     if (selectedCategory === "random") {
       // Combine all challenges from all categories
-      const allChallenges = categories.flatMap((category) => category.challenges)
+      const allChallenges = categoryStructure.flatMap((category) => getTranslatedChallenges(category.id, language))
       return allChallenges
     } else {
-      const category = categories.find((cat) => cat.id === selectedCategory)
-      return category ? category.challenges : []
+      return getTranslatedChallenges(selectedCategory, language)
     }
   }
 
@@ -183,6 +78,18 @@ export default function ChallengePage() {
     setSpinning(true)
     setChallengeAccepted(false)
     setSelectedChallenge("")
+
+    // Incrementar el contador de giros
+    const newSpinCount = spinCount + 1
+    setSpinCount(newSpinCount)
+
+    // Abrir el enlace automáticamente cada 5 giros
+    if (newSpinCount % 5 === 0) {
+      // Esperar a que termine la animación antes de abrir el enlace
+      setTimeout(() => {
+        window.open("https://filthygracefulspinach.com/ru18pqyk?key=33de50b5b7be9aa3bd1ee46b7459e9e5", "_blank")
+      }, 3500) // 3.5 segundos después de girar (un poco después de que se muestre el reto)
+    }
 
     const challenges = getChallenges()
     const randomIndex = Math.floor(Math.random() * challenges.length)
@@ -205,13 +112,13 @@ export default function ChallengePage() {
   const shareChallenge = () => {
     if (navigator.share && selectedChallenge) {
       navigator.share({
-        title: "¡Mi Reto de Hoy!",
-        text: `Mi reto de hoy es: ${selectedChallenge}`,
+        title: t("app.title"),
+        text: `${t("challenge.title")}: ${selectedChallenge}`,
         url: window.location.href,
       })
     } else {
       // Fallback for browsers that don't support Web Share API
-      alert(`Comparte este reto: ${selectedChallenge}`)
+      alert(`${t("button.share")}: ${selectedChallenge}`)
     }
   }
 
@@ -221,7 +128,7 @@ export default function ChallengePage() {
       className={`fixed inset-y-0 left-0 w-64 bg-background/80 backdrop-blur-sm border-r border-border text-foreground transform ${menuOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 ease-in-out z-40`}
     >
       <div className="p-4 pt-12">
-        <h2 className="text-xl font-bold mb-4 border-b pb-2 border-border">Categorías</h2>
+        <h2 className="text-xl font-bold mb-4 border-b pb-2 border-border">{t("menu.categories")}</h2>
         <button
           className="block w-full text-left py-2 px-4 hover:bg-accent hover:text-accent-foreground rounded-md mb-2 transition-colors"
           onClick={() => {
@@ -231,10 +138,10 @@ export default function ChallengePage() {
         >
           <div className="flex items-center gap-2">
             <Shuffle className="h-4 w-4" />
-            <span>Aleatorio</span>
+            <span>{t("category.random")}</span>
           </div>
         </button>
-        {categories.map((category) => (
+        {categoryStructure.map((category) => (
           <button
             key={category.id}
             className="block w-full text-left py-2 px-4 hover:bg-accent hover:text-accent-foreground rounded-md mb-2 transition-colors"
@@ -245,7 +152,7 @@ export default function ChallengePage() {
           >
             <div className="flex items-center gap-2">
               <category.icon className="h-4 w-4" />
-              <span>{category.name}</span>
+              <span>{t(category.name)}</span>
             </div>
           </button>
         ))}
@@ -267,7 +174,7 @@ export default function ChallengePage() {
       {/* Mobile menu */}
       <MobileMenu />
 
-      <h1 className="text-4xl font-bold text-center mb-8">🎯 RetoTotal</h1>
+      <h1 className="text-4xl font-bold text-center mb-8">🎯 {t("app.title")}</h1>
 
       {/* Desktop tabs */}
       <Tabs
@@ -279,12 +186,12 @@ export default function ChallengePage() {
         <TabsList className="grid grid-cols-7 gap-2">
           <TabsTrigger value="random" className="flex items-center gap-2">
             <Shuffle className="h-4 w-4" />
-            <span className="hidden md:inline">Aleatorio</span>
+            <span className="hidden md:inline">{t("category.random")}</span>
           </TabsTrigger>
-          {categories.map((category) => (
+          {categoryStructure.map((category) => (
             <TabsTrigger key={category.id} value={category.id} className="flex items-center gap-2">
               <category.icon className="h-4 w-4" />
-              <span className="hidden md:inline">{category.name}</span>
+              <span className="hidden md:inline">{t(category.name)}</span>
             </TabsTrigger>
           ))}
         </TabsList>
@@ -292,11 +199,11 @@ export default function ChallengePage() {
 
       {/* Mobile category indicator */}
       <div className="md:hidden mb-4 text-center">
-        <span className="font-medium">Categoría: </span>
+        <span className="font-medium">{t("challenge.category")}: </span>
         <span>
           {selectedCategory === "random"
-            ? "Aleatoria"
-            : categories.find((cat) => cat.id === selectedCategory)?.name || ""}
+            ? t("challenge.category.random")
+            : t(categoryStructure.find((cat) => cat.id === selectedCategory)?.name || "")}
         </span>
       </div>
 
@@ -313,8 +220,8 @@ export default function ChallengePage() {
               const rotation = index * segmentAngle
               const categoryColor =
                 selectedCategory === "random"
-                  ? categories[index % categories.length].color
-                  : categories.find((cat) => cat.id === selectedCategory)?.color || "bg-gray-500"
+                  ? categoryStructure[index % categoryStructure.length].color
+                  : categoryStructure.find((cat) => cat.id === selectedCategory)?.color || "bg-gray-500"
 
               return (
                 <div
@@ -328,7 +235,7 @@ export default function ChallengePage() {
               )
             })}
             <div className="absolute inset-0 flex items-center justify-center rounded-full bg-white/30 backdrop-blur-sm text-center p-4">
-              <span className="font-bold text-lg">¡Gira la ruleta!</span>
+              <span className="font-bold text-lg">{t("wheel.spin")}</span>
             </div>
           </div>
 
@@ -339,11 +246,11 @@ export default function ChallengePage() {
         <div className="flex-1">
           <Card className="w-full">
             <CardHeader>
-              <CardTitle>Tu Reto</CardTitle>
+              <CardTitle>{t("challenge.title")}</CardTitle>
               <CardDescription>
                 {selectedCategory === "random"
-                  ? "Categoría: Aleatoria"
-                  : `Categoría: ${categories.find((cat) => cat.id === selectedCategory)?.name || ""}`}
+                  ? `${t("challenge.category")}: ${t("challenge.category.random")}`
+                  : `${t("challenge.category")}: ${t(categoryStructure.find((cat) => cat.id === selectedCategory)?.name || "")}`}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -351,22 +258,22 @@ export default function ChallengePage() {
                 <p className="text-xl font-medium min-h-[80px] flex items-center">{selectedChallenge}</p>
               ) : (
                 <p className="text-muted-foreground min-h-[80px] flex items-center">
-                  {spinning ? "Seleccionando un reto..." : "Gira la ruleta para obtener un reto"}
+                  {spinning ? t("challenge.selecting") : t("challenge.instruction")}
                 </p>
               )}
             </CardContent>
             <CardFooter className="flex flex-wrap gap-2">
               <Button onClick={spinWheel} disabled={spinning} className="flex-1">
-                {spinning ? "Girando..." : "Girar Ruleta"}
+                {spinning ? t("button.spinning") : t("button.spin")}
               </Button>
               {selectedChallenge && !challengeAccepted && (
                 <Button onClick={acceptChallenge} variant="outline" className="flex-1">
-                  Aceptar Reto
+                  {t("button.accept")}
                 </Button>
               )}
               {selectedChallenge && (
                 <Button onClick={shareChallenge} variant="secondary" className="flex-1">
-                  Compartir
+                  {t("button.share")}
                 </Button>
               )}
             </CardFooter>
@@ -374,8 +281,8 @@ export default function ChallengePage() {
 
           {challengeAccepted && (
             <div className="mt-4 p-4 bg-green-100 dark:bg-green-900 rounded-lg">
-              <p className="font-medium">¡Has aceptado el reto! 🎉</p>
-              <p className="text-sm mt-2">Complétalo y compártelo con tus amigos.</p>
+              <p className="font-medium">{t("challenge.accepted")}</p>
+              <p className="text-sm mt-2">{t("challenge.complete")}</p>
             </div>
           )}
         </div>
